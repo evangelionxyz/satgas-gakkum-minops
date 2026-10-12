@@ -1,6 +1,6 @@
 [package]
 name = "satgas-gakkum-minops"
-version = "1.0.0"
+version = "1.0.1"
 description = "Sistem Kompilasi dan Penggabungan LAPHAR Satgas Gakkum Minops"
 authors = ["Evangelion Manuhutu"]
 edition = "2021"
