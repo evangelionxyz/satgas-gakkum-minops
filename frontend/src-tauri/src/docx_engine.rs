@@ -410,12 +410,22 @@ pub fn parse_docx_bytes(data: &[u8], filename: &str) -> Result<(String, Option<S
                 if let Some(blip_cap) = re_blip.captures(dw_xml) {
                     let embed_rid = &blip_cap[1];
                     if let Some((media_id, orig_target)) = rid_to_media.get(embed_rid) {
+                        let b64 = get_media(media_id).map(|bytes| {
+                            use base64::prelude::*;
+                            let mime = if orig_target.to_lowercase().ends_with(".png") {
+                                "image/png"
+                            } else {
+                                "image/jpeg"
+                            };
+                            format!("data:{};base64,{}", mime, BASE64_STANDARD.encode(&bytes))
+                        });
+
                         row_drawings.push(CellDrawing {
                             col_idx: c_idx,
                             drawing_xml: dw_xml.to_string(),
                             media_id: media_id.clone(),
                             original_target: orig_target.clone(),
-                            image_base64: None,
+                            image_base64: b64,
                         });
                     }
                 }
@@ -1189,8 +1199,10 @@ mod tests {
         assert!(parse_result.total_items > 0, "Should have extracted activity items");
         let date = parse_result.detected_date.clone().unwrap_or_else(|| "2026-10-05".to_string());
         let total_drawings: usize = parse_result.items.iter().map(|it| it.drawings.len()).sum();
-        println!("Total image drawings extracted across all items: {}", total_drawings);
+        let total_b64: usize = parse_result.items.iter().flat_map(|it| &it.drawings).filter(|d| d.image_base64.is_some()).count();
+        println!("Total image drawings extracted across all items: {}, with base64 data URLs: {}", total_drawings, total_b64);
         assert!(total_drawings > 0, "Should have extracted image drawings from activity rows");
+        assert_eq!(total_drawings, total_b64, "All drawings should have base64 data URLs");
 
         let req = MergeRequest {
             date,

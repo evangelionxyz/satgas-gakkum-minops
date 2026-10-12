@@ -3203,6 +3203,7 @@ dependencies = [
 name = "satgas-gakkum-minops"
 version = "1.0.0"
 dependencies = [
+ "base64 0.22.1",
  "chrono",
  "log",
  "regex",

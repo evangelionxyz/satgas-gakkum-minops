@@ -19,6 +19,9 @@ import {
   ShieldCheck,
   ChevronDown,
   ChevronUp,
+  X,
+  Maximize2,
+  ImageIcon,
 } from 'lucide-react';
 
 interface WordMergerViewProps {
@@ -53,6 +56,7 @@ export const WordMergerView: React.FC<WordMergerViewProps> = ({ selectedDate }) 
   const [searchFilter, setSearchFilter] = useState<string>('');
   const [subsatgasFilter, setSubsatgasFilter] = useState<string>('ALL');
   const [lastSavedPath, setLastSavedPath] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<{ src: string; caption?: string; title?: string } | null>(null);
 
   // Kasatgas Signature Configuration State
   const [showSigConfig, setShowSigConfig] = useState<boolean>(false);
@@ -788,25 +792,25 @@ export const WordMergerView: React.FC<WordMergerViewProps> = ({ selectedDate }) 
             </div>
           </div>
 
-          {/* Table Preview */}
-          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
-            <table className="w-full text-left text-xs border-collapse">
+          {/* Table Preview (Full Width & No Horizontal Overflow) */}
+          <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c121e] overflow-hidden shadow-sm">
+            <table className="w-full table-fixed text-left border-collapse">
               <thead>
-                <tr className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
-                  <th className="py-2.5 px-3 w-12 text-center">NO</th>
-                  <th className="py-2.5 px-3 w-28">SUBSATGAS</th>
-                  <th className="py-2.5 px-3 w-36">UNIT / WILAYAH</th>
-                  <th className="py-2.5 px-3 w-32">WAKTU / PERS</th>
-                  <th className="py-2.5 px-3 w-36">LOKASI</th>
-                  <th className="py-2.5 px-3 min-w-[200px]">KEGIATAN</th>
-                  <th className="py-2.5 px-3 min-w-[200px]">HASIL YANG DICAPAI</th>
-                  <th className="py-2.5 px-3 w-24">KET</th>
+                <tr className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800 text-xs uppercase tracking-wider">
+                  <th className="py-3.5 px-2 w-[3.5%] text-center">NO</th>
+                  <th className="py-3.5 px-3 w-[8.5%]">SUBSATGAS</th>
+                  <th className="py-3.5 px-3 w-[11%]">UNIT / WILAYAH</th>
+                  <th className="py-3.5 px-3 w-[9.5%]">WAKTU & PERS</th>
+                  <th className="py-3.5 px-3 w-[10.5%]">LOKASI</th>
+                  <th className="py-3.5 px-3 w-[25.5%]">URAIAN KEGIATAN</th>
+                  <th className="py-3.5 px-3 w-[18.5%]">HASIL YANG DICAPAI</th>
+                  <th className="py-3.5 px-3 w-[13%]">KET / DOKUMENTASI</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                 {filteredItems.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="py-8 text-center text-slate-400">
+                    <td colSpan={8} className="py-12 text-center text-slate-400 text-sm">
                       Tidak ada kegiatan yang cocok dengan kriteria pencarian.
                     </td>
                   </tr>
@@ -816,12 +820,15 @@ export const WordMergerView: React.FC<WordMergerViewProps> = ({ selectedDate }) 
                       key={idx}
                       className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
                     >
-                      <td className="py-2.5 px-3 text-center font-mono text-slate-400 text-[11px]">
+                      {/* NO */}
+                      <td className="py-3.5 px-2 text-center font-mono font-bold text-slate-500 dark:text-slate-400 text-sm align-top">
                         {idx + 1}
                       </td>
-                      <td className="py-2.5 px-3 font-semibold">
+
+                      {/* SUBSATGAS */}
+                      <td className="py-3.5 px-3 align-top font-semibold">
                         <span
-                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${
+                          className={`text-xs font-bold px-2 py-1 rounded-md border inline-block tracking-wide ${
                             item.subsatgas === 'MINOPS'
                               ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800'
                               : item.subsatgas === 'LIDIK'
@@ -834,29 +841,84 @@ export const WordMergerView: React.FC<WordMergerViewProps> = ({ selectedDate }) 
                           {item.subsatgas}
                         </span>
                       </td>
-                      <td className="py-2.5 px-3 font-bold text-slate-900 dark:text-slate-100 text-[11px]">
-                        {item.unit_name}
+
+                      {/* UNIT / WILAYAH */}
+                      <td className="py-3.5 px-3 align-top">
+                        <div className="font-bold text-slate-900 dark:text-slate-100 text-sm leading-snug break-words">
+                          {item.unit_name}
+                        </div>
                       </td>
-                      <td className="py-2.5 px-3 text-slate-600 dark:text-slate-300 text-[11px]">
-                        <div className="font-semibold">{item.activity_time || '-'}</div>
-                        <div className="text-slate-400 text-[10px]">{item.personnel_count || '-'}</div>
+
+                      {/* WAKTU & PERS */}
+                      <td className="py-3.5 px-3 align-top space-y-1">
+                        <div className="text-sm font-semibold text-slate-800 dark:text-slate-200 break-words">
+                          {item.activity_time || '-'}
+                        </div>
+                        <div className="text-xs font-medium text-slate-500 dark:text-slate-400 break-words">
+                          {item.personnel_count ? `${item.personnel_count} Pers` : '-'}
+                        </div>
                       </td>
-                      <td className="py-2.5 px-3 text-slate-700 dark:text-slate-300 text-[11px]">
+
+                      {/* LOKASI */}
+                      <td className="py-3.5 px-3 align-top text-sm font-medium text-slate-800 dark:text-slate-200 leading-normal break-words">
                         {item.location || '-'}
                       </td>
-                      <td className="py-2.5 px-3 text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">
+
+                      {/* URAIAN KEGIATAN */}
+                      <td className="py-3.5 px-3 align-top text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-normal whitespace-pre-line break-words">
                         {item.activity_desc || '-'}
                       </td>
-                      <td className="py-2.5 px-3 text-slate-700 dark:text-slate-300 text-[11px] leading-relaxed">
+
+                      {/* HASIL YANG DICAPAI */}
+                      <td className="py-3.5 px-3 align-top text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-normal whitespace-pre-line break-words">
                         {item.results || '-'}
                       </td>
-                      <td className="py-2.5 px-3 text-slate-400 text-[11px]">
+
+                      {/* KET & FOTO DOKUMENTASI */}
+                      <td className="py-3.5 px-3 align-top space-y-2.5 break-words">
                         {item.drawings && item.drawings.length > 0 && (
-                          <div className="inline-flex items-center gap-1 px-1.5 py-0.5 mb-1 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold border border-amber-500/20">
-                            📷 {item.drawings.length} Foto
+                          <div className="space-y-1.5">
+                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-bold border border-amber-500/25">
+                              <ImageIcon className="w-3.5 h-3.5" />
+                              <span>{item.drawings.length} Foto</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2 pt-1">
+                              {item.drawings.map((dw, dIdx) => (
+                                <div
+                                  key={dIdx}
+                                  onClick={() =>
+                                    setPreviewImage({
+                                      src: dw.image_base64 || '',
+                                      title: `${item.subsatgas} • ${item.unit_name} (Foto ${dIdx + 1})`,
+                                      caption: item.notes || item.activity_desc,
+                                    })
+                                  }
+                                  className="group relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 cursor-pointer shadow-xs hover:shadow-md hover:ring-2 hover:ring-orange-500 transition-all flex-shrink-0"
+                                  title="Klik untuk melihat foto dalam ukuran penuh"
+                                >
+                                  {dw.image_base64 ? (
+                                    <img
+                                      src={dw.image_base64}
+                                      alt={`Foto ${dIdx + 1}`}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                      loading="lazy"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                                      📷 Foto
+                                    </div>
+                                  )}
+                                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                                    <Maximize2 className="w-4 h-4" />
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         )}
-                        <div>{item.notes || '-'}</div>
+                        <div className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                          {item.notes || '-'}
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -865,36 +927,50 @@ export const WordMergerView: React.FC<WordMergerViewProps> = ({ selectedDate }) 
             </table>
           </div>
 
-          {/* Kejadian Menonjol Table */}
+          {/* Kejadian Menonjol Table (Full Width & Readable) */}
           {extractedIncidents.length > 0 && (
-            <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800/80">
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <div className="space-y-3 pt-6 border-t border-slate-100 dark:border-slate-800/80">
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 text-red-500" />
                 <span>Kejadian Menonjol ({extractedIncidents.length} Kejadian)</span>
               </h3>
-              <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
-                <table className="w-full text-left text-xs border-collapse">
+              <div className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c121e] overflow-hidden shadow-sm">
+                <table className="w-full table-fixed text-left border-collapse">
                   <thead>
-                    <tr className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
-                      <th className="py-2.5 px-3 w-12 text-center">NO</th>
-                      <th className="py-2.5 px-3 w-28">WAKTU</th>
-                      <th className="py-2.5 px-3 w-36">LOKASI</th>
-                      <th className="py-2.5 px-3 min-w-[200px]">KEJADIAN</th>
-                      <th className="py-2.5 px-3 min-w-[150px]">KORBAN / KERUGIAN</th>
-                      <th className="py-2.5 px-3 min-w-[150px]">TINDAKAN</th>
-                      <th className="py-2.5 px-3 w-24">KET</th>
+                    <tr className="bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800 text-xs uppercase tracking-wider">
+                      <th className="py-3.5 px-2 w-[4%] text-center">NO</th>
+                      <th className="py-3.5 px-3 w-[10%]">WAKTU</th>
+                      <th className="py-3.5 px-3 w-[13%]">LOKASI</th>
+                      <th className="py-3.5 px-3 w-[27%]">URAIAN KEJADIAN</th>
+                      <th className="py-3.5 px-3 w-[18%]">KORBAN / KERUGIAN</th>
+                      <th className="py-3.5 px-3 w-[18%]">TINDAKAN DIAMBIL</th>
+                      <th className="py-3.5 px-3 w-[10%]">KET</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                     {extractedIncidents.map((inc, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                        <td className="py-2.5 px-3 text-center font-mono text-slate-400">{idx + 1}</td>
-                        <td className="py-2.5 px-3 font-semibold">{inc.incident_time || '-'}</td>
-                        <td className="py-2.5 px-3">{inc.location || '-'}</td>
-                        <td className="py-2.5 px-3 font-medium">{inc.incident_desc || '-'}</td>
-                        <td className="py-2.5 px-3">{inc.casualties_losses || '-'}</td>
-                        <td className="py-2.5 px-3">{inc.actions_taken || '-'}</td>
-                        <td className="py-2.5 px-3 text-slate-400">{inc.notes || '-'}</td>
+                      <tr key={idx} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                        <td className="py-3.5 px-2 text-center font-mono font-bold text-slate-400 text-sm align-top">
+                          {idx + 1}
+                        </td>
+                        <td className="py-3.5 px-3 align-top font-semibold text-slate-900 dark:text-slate-100 text-sm break-words">
+                          {inc.incident_time || '-'}
+                        </td>
+                        <td className="py-3.5 px-3 align-top text-slate-800 dark:text-slate-200 text-sm font-medium break-words">
+                          {inc.location || '-'}
+                        </td>
+                        <td className="py-3.5 px-3 align-top font-medium text-slate-800 dark:text-slate-200 text-sm leading-relaxed whitespace-pre-line break-words">
+                          {inc.incident_desc || '-'}
+                        </td>
+                        <td className="py-3.5 px-3 align-top text-slate-800 dark:text-slate-200 text-sm leading-relaxed whitespace-pre-line break-words">
+                          {inc.casualties_losses || '-'}
+                        </td>
+                        <td className="py-3.5 px-3 align-top text-slate-800 dark:text-slate-200 text-sm leading-relaxed whitespace-pre-line break-words">
+                          {inc.actions_taken || '-'}
+                        </td>
+                        <td className="py-3.5 px-3 align-top text-slate-700 dark:text-slate-300 text-sm break-words">
+                          {inc.notes || '-'}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -902,6 +978,52 @@ export const WordMergerView: React.FC<WordMergerViewProps> = ({ selectedDate }) 
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Full Resolution Image Lightbox Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[92vh] bg-slate-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 py-3.5 bg-slate-950 border-b border-slate-800">
+              <div className="flex items-center gap-2.5 text-white font-bold text-sm">
+                <ImageIcon className="w-4 h-4 text-orange-400" />
+                <span>{previewImage.title || 'Dokumentasi Foto Kegiatan'}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewImage(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Tutup (Esc)"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Image Viewport */}
+            <div className="flex-1 overflow-auto flex items-center justify-center p-4 bg-slate-950/60 max-h-[75vh]">
+              <img
+                src={previewImage.src}
+                alt="Dokumentasi"
+                className="max-h-[72vh] w-auto max-w-full object-contain rounded-xl shadow-lg border border-slate-800"
+              />
+            </div>
+
+            {/* Caption / Description */}
+            {previewImage.caption && (
+              <div className="px-5 py-3 bg-slate-950 border-t border-slate-800 text-slate-300 text-xs sm:text-sm leading-relaxed">
+                <span className="font-semibold text-orange-400 mr-2">Catatan / Uraian:</span>
+                {previewImage.caption}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
