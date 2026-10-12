@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+
+  --primary: #ea580c; /* Shelf signature warm orange */
+  --primary-foreground: #ffffff;
+
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  --accent: #f8fafc;
+  --accent-foreground: #0f172a;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #ea580c;
+}
+
+.dark {
+  --background: #080d14;
+  --foreground: #f8fafc;
+
+  --card: #0f1722;
+  --card-foreground: #f8fafc;
+
+  --popover: #0f1722;
+  --popover-foreground: #f8fafc;
+
+  --primary: #ea580c; /* Shelf warm orange */
+  --primary-foreground: #ffffff;
+
+  --secondary: #16202e;
+  --secondary-foreground: #f8fafc;
+
+  --muted: #131c28;
+  --muted-foreground: #94a3b8;
+
+  --accent: #192434;
+  --accent-foreground: #f8fafc;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --border: #1e2c3d;
+  --input: #1e2c3d;
+  --ring: #ea580c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--foreground);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: 100vh;
+}
+
+/* Subtle scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.45);
+}
+
+/* Shelf style animated dot */
+@keyframes pingSlow {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+.animate-ping-slow {
+  animation: pingSlow 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Print Optimization */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: white !important;
+    color: black !important;
+  }
+  table, th, td {
+    border-color: #000000 !important;
+    color: #000000 !important;
+    background: white !important;
+  }
+}

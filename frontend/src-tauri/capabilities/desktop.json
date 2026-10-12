@@ -1,0 +1,25 @@
+{
+  "identifier": "desktop-capability",
+  "platforms": [
+    "macOS",
+    "windows",
+    "linux"
+  ],
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "updater:default",
+    "notification:default",
+    "dialog:default",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "fs:default",
+    "fs:allow-write-file",
+    "fs:allow-read-file",
+    "fs:allow-mkdir",
+    "opener:default",
+    "process:default",
+    "core:app:default"
+  ]
+}
